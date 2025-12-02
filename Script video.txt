@@ -1,0 +1,80 @@
+Ne pishem pe GitHub? Proiect alternativa github.
+
+You: "We rely on centralized platforms like GitHub for everything. But what if we didn't have to? What if every company or developer could host their own code, but still collaborate seamlessly with everyone else, without needing a shared account?"
+
+You: "I’m building an Open Source, Federated Collaboration Tool. Think of it like email—you have your server, I have mine, but we can still send messages. In this case, those messages are Pull Requests."
+
+You: "I’m building this in C# using .NET, and in this first episode, we are building the foundation: The backend that can actually read and understand a Git repository."
+
+Section 2: The Architecture
+(Visual: A simple diagram showing [Your App] <--> [LibGit2Sharp] <--> [File System])
+
+You: "Before we write code, here is the plan. We aren't building a wrapper around the git command line. That's too slow."
+
+You: "We are using a library called LibGit2Sharp. This gives our C# code direct, native access to the Git database hidden inside those .git folders.
+
+Storage: We'll have a folder on the disk that acts as our 'Library' of repos.
+
+Service: We'll write a C# Service to open those repos.
+
+API: We'll expose endpoints so the web interface can ask 'What branches does this project have?'"
+
+Section 3: Setting up the "Library"
+(Visual: Screen recording. Show your file explorer and terminal.)
+
+You: "First, we need data. I’m keeping the application code and the git data separate. This simulates a real server where data lives on a storage drive."
+
+(Action on screen: Show the my-git-server folder)
+
+You: "I created a dummy project here called my-test-project, ran git init, and made a commit. This is crucial—since I haven't added a 'Remote', this folder is the server. It's the master copy."
+
+Section 4: The Code (The "Brain")
+(Visual: VS Code. Zoom in on GitService.cs)
+
+You: "Now for the backend. I created a .NET Web API project. The most important piece is this GitService."
+
+(Highlight the _repoBasePath line)
+
+You: "Here, I'm pointing the service to my local storage folder. When we ask for a repo, it combines this path with the project name."
+
+(Highlight the GetBranches method)
+
+You: "This is where the magic happens. We use new Repository(path) to open the database. Then, we filter for !b.IsRemote. We only care about the local branches that live on this server, not the tracking pointers."
+
+Section 5: The API (The "Waiter")
+(Visual: Switch to ReposController.cs)
+
+You: "To make this accessible to the outside world, I built a simple Controller. It takes a GET request at /api/Repos/{name}/branches, calls our service, and returns the list."
+
+You: "I actually ran into a bug here where the server was returning 404s because the build wasn't picking up my new file—turns out I just needed to make sure the file was in the right folder and the build was clean. Classic dev moment."
+
+Section 6: The Demo
+(Visual: Split screen. Terminal running dotnet run on one side, Postman/Swagger on the other.)
+
+You: "Let's fire it up."
+
+(Action: Run dotnet run. Show the 'Now Listening' text.)
+
+You: "The server is running. It's listening on port [Your Port]. Now, let's ask it what branches exist in my-test-project."
+
+(Action: Click Send in Postman/Swagger.)
+
+You: "And... there it is. Status 200 OK. We get a JSON array back with ['master'] (or main)."
+
+You: "It seems simple, but this proves our C# app can successfully locate, open, and read the internal structure of a Git repository on the disk."
+
+Section 7: Outro
+(Visual: Facecam)
+
+You: "We have the foundation. We can read the 'Table of Contents' of a repo. But a collaboration tool needs more than just branch names."
+
+You: "In the next episode, we’re going deeper. We’re going to read the Commits, extract the author data, and maybe even start looking at File Diffs—the actual code changes."
+
+You: "If you want to follow along with this federated git project, hit subscribe. The code is open source, link in the description. See you in the next one."
+
+Pro Tips for Recording:
+Don't hide the mistakes: You mentioned the 404 error earlier. Mentioning that in the video makes you more relatable.
+
+Zoom In: When showing code, zoom in 2 or 3 times more than you think you need to.
+
+Show the file path: When explaining the GitService, emphasize that the path in the code MUST match the path on the computer. That was a big "Aha!" moment for us.

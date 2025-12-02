@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FGP.Server", "FGP.Server.csproj", "{0B0318A2-BF4B-3603-E49F-89184B7A6773}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0B0318A2-BF4B-3603-E49F-89184B7A6773}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B0318A2-BF4B-3603-E49F-89184B7A6773}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B0318A2-BF4B-3603-E49F-89184B7A6773}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B0318A2-BF4B-3603-E49F-89184B7A6773}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {58F606C4-5BA7-43C6-834B-E9DCB8899F4D}
+	EndGlobalSection
+EndGlobal
