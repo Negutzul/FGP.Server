@@ -29,4 +29,39 @@ public class GitService
                 .ToList();
         }
     }
+
+    // Add this inside the GitService class
+    public List<SimpleCommit> GetCommitsForBranch(string repoName, string branchName)
+    {
+        string repoPath = Path.Combine(_repoBasePath, repoName);
+
+        using (var repo = new Repository(repoPath))
+        {
+            // 1. Find the specific branch (e.g., "main")
+            var branch = repo.Branches[branchName];
+            
+            if (branch == null)
+            {
+                throw new Exception($"Branch '{branchName}' not found.");
+            }
+
+            // 2. Read the commits from that branch
+            // We convert the complex Git commit into our "SimpleCommit"
+            return branch.Commits
+                .Select(c => new SimpleCommit(
+                    c.Sha,
+                    c.MessageShort,
+                    c.Author.Name,
+                    c.Author.When
+                ))
+                .ToList();
+        }
+    }
 }
+
+public record SimpleCommit(
+    string Sha, 
+    string Message, 
+    string Author, 
+    DateTimeOffset Date
+);

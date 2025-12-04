@@ -47,3 +47,4 @@ C:\Users\klu\Desktop\Projects\FGP.Server\obj\Debug\net10.0\refint\FGP.Server.dll
 C:\Users\klu\Desktop\Projects\FGP.Server\obj\Debug\net10.0\FGP.Server.pdb
 C:\Users\klu\Desktop\Projects\FGP.Server\obj\Debug\net10.0\FGP.Server.genruntimeconfig.cache
 C:\Users\klu\Desktop\Projects\FGP.Server\obj\Debug\net10.0\ref\FGP.Server.dll
+C:\Users\klu\Desktop\Projects\FGP.Server\obj\Debug\net10.0\FGP.Server.sourcelink.json

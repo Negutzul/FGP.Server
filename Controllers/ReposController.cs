@@ -28,4 +28,18 @@ public class ReposController : ControllerBase
             return NotFound(ex.Message);
         }
     }
+
+    [HttpGet("{repoName}/branches/{branchName}/commits")]
+    public IActionResult GetCommits(string repoName, string branchName)
+    {
+        try
+        {
+            var commits = _gitService.GetCommitsForBranch(repoName, branchName);
+            return Ok(commits);
+        }
+        catch (Exception ex)
+        {
+            return NotFound(ex.Message);
+        }
+    }
 }
