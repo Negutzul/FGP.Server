@@ -42,4 +42,39 @@ public class ReposController : ControllerBase
             return NotFound(ex.Message);
         }
     }
+
+    [HttpGet("{repoName}/commits/{sha}/diff")]
+    public IActionResult GetCommitDiff(string repoName, string sha)
+    {
+        try
+        {
+            var diffs = _gitService.GetDiffForCommit(repoName, sha);
+            return Ok(diffs);
+        }
+        catch (Exception ex)
+        {
+            return NotFound(ex.Message);
+        }
+    }
+
+    [HttpGet("{repoName}/branches/{branchName}/files/{*path}")]
+    public IActionResult GetFileContent(string repoName, string branchName, string path)
+    {
+        try
+        {
+            // Decodes the file content
+            var content = _gitService.GetFileContent(repoName, branchName, path);
+            
+            // Returns a simple JSON object with the content
+            return Ok(new { Content = content });
+        }
+        catch (FileNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
 }
