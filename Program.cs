@@ -1,4 +1,6 @@
 using FGP.Server;
+using FGP.Server.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,7 +9,8 @@ builder.Services.AddControllers();
 builder.Services.AddSingleton<GitService>(); // <--- This will have a RED line. That is normal!
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlite("Data Source=app.db"));
 var app = builder.Build();
 
 // --- PIPELINE (Instructions) ---

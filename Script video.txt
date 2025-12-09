@@ -1,69 +1,51 @@
-1. The Goal (The "Why")
-Hook: "We can list branches, we can see commit history... but we still can't actually read the code. A Git platform isn't useful if you can't see the files."
+dotnet add package Microsoft.EntityFrameworkCore.Sqlite
+dotnet add package Microsoft.EntityFrameworkCore.Design
 
-Objective: "Today we are building the GetFileContent endpoint. We want to be able to request README.md or src/Controllers/ReposController.cs and get the actual text back."
+dotnet tool install --global dotnet-ef --version 9.*
+dotnet ef migrations add InitialCreate
 
-2. The Challenge (The "Git" Part)
-Concept: Explain that Git doesn't store "Files" and "Folders" the way Windows does.
+Coding partner
+Here is the step-by-step "script" of actions for the video. This covers exactly what you need to do to see your data.
 
-Key terms to mention:
+The Extension we installed
+We installed SQLite Viewer (usually the one by Florian Klampfer).
 
-Tree: The folder structure.
+Why? It allows you to click on .db files and see them instantly as tables, just like Excel, without writing code.
 
-Blob: (Binary Large Object) The file content.
+The Script (Step-by-Step Guide)
+Step 1: Locate the Database
 
-The Code: Show the GitService.cs method.
+Open the File Explorer on the left side of VS Code.
 
-Explanation: "We use commit[path] to jump straight to the file. We cast it to a Blob, and then call GetContentText() to turn those raw bytes into a string."
+Look for your database file (usually named app.db, db.sqlite3, or similar).
 
-3. The "Secret Sauce" (The Routing Part)
-(This is the part you wanted to focus on)
+Step 2: Open the Database
 
-The Problem: "Here is the tricky part. Standard Web APIs hate slashes in parameters."
+Single-click the app.db file.
 
-"If I try to send a GET request to /api/files/src/program.cs, the server gets confused. It thinks src is one folder and program.cs is another. It breaks the route matching."
+Because you installed the extension, it won't show "binary" garbage anymore. Instead, it will open a clean Grid View in the main window.
 
-The Solution: "We use a special syntax in ASP.NET Core called the Catch-All or Wildcard parameter."
+Step 3: View Your Data
 
-Visual: Zoom in on [HttpGet("{repoName}/.../files/{*path}")].
+You will see a list of your Tables (e.g., user, post, inventory).
 
-The Explanation (Script):
+Click on a table name to expand it.
 
-"Do you see this asterisk before the word path? {*path}?
+You can now see the rows (Client A, Client B, stock counts, etc.).
 
-This tells the router: 'I don't care how many slashes are in the rest of this URL. Just take everything that comes after this point and shove it into the path string.'
+Step 4: Refreshing (Important!)
 
-So if I send src/components/button.js, the router doesn't split it up. It grabs that entire string as one single variable. This is the only clean way to handle file paths in a REST API."
+Note: If you run your Python code and update the stock, the viewer might not update automatically.
 
-4. The Demo
-Action: Open Postman.
+There is usually a tiny Refresh Icon (circular arrow) at the top of the viewer table. Click that to see the latest changes after you run a "buy" test.
 
-Test 1: Read README.md (Simple file).
+What to look for right now
+Since you are testing the "Race Condition," you should:
 
-Test 2: Read a file inside a subfolder (e.g., src/test.txt) to prove the {*path} wildcard is working correctly.
+Open the inventory table in this viewer.
 
-Result: Show the JSON response with the file content.
+Look at the stock_count column.
 
-5. Outro
-Summary: "Now we have a fully read-only Git server. We can browse branches, history, diffs, and raw files."
+Run your Python "buy" script.
 
-Next Steps: "Next time, we might start building the Frontend to visualize this, or we might look into how to handle Binary files (like images), because right now our text decoder will crash if we try to open a PNG."
-
-Visual Aid for the Video
-When you explain the {*path} part, you can use a graphic like this to visualize how the Router sees the URL:
-
-Without * (The Router panics): GET /files/src/program.cs
-
-files -> Route
-
-src -> Parameter 1?
-
-program.cs -> 404 Not Found (Too many segments!)
-
-With * (The Router understands): GET /files/{*path} GET /files/src/program.cs
-
-files -> Route
-
-src/program.cs -> path (One single variable)
-
-(You can use the Routing phase of the pipeline diagram to visually anchor where this decision happens).
+Hit Refresh in the viewer to see if the number went down correctly (or if it went to -1, which means the bug is happening!).
