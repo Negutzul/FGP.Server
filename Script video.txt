@@ -1,51 +1,5 @@
 dotnet add package Microsoft.EntityFrameworkCore.Sqlite
 dotnet add package Microsoft.EntityFrameworkCore.Design
 
-dotnet tool install --global dotnet-ef --version 9.*
 dotnet ef migrations add InitialCreate
-
-Coding partner
-Here is the step-by-step "script" of actions for the video. This covers exactly what you need to do to see your data.
-
-The Extension we installed
-We installed SQLite Viewer (usually the one by Florian Klampfer).
-
-Why? It allows you to click on .db files and see them instantly as tables, just like Excel, without writing code.
-
-The Script (Step-by-Step Guide)
-Step 1: Locate the Database
-
-Open the File Explorer on the left side of VS Code.
-
-Look for your database file (usually named app.db, db.sqlite3, or similar).
-
-Step 2: Open the Database
-
-Single-click the app.db file.
-
-Because you installed the extension, it won't show "binary" garbage anymore. Instead, it will open a clean Grid View in the main window.
-
-Step 3: View Your Data
-
-You will see a list of your Tables (e.g., user, post, inventory).
-
-Click on a table name to expand it.
-
-You can now see the rows (Client A, Client B, stock counts, etc.).
-
-Step 4: Refreshing (Important!)
-
-Note: If you run your Python code and update the stock, the viewer might not update automatically.
-
-There is usually a tiny Refresh Icon (circular arrow) at the top of the viewer table. Click that to see the latest changes after you run a "buy" test.
-
-What to look for right now
-Since you are testing the "Race Condition," you should:
-
-Open the inventory table in this viewer.
-
-Look at the stock_count column.
-
-Run your Python "buy" script.
-
-Hit Refresh in the viewer to see if the number went down correctly (or if it went to -1, which means the bug is happening!).
+dotnet ef database update

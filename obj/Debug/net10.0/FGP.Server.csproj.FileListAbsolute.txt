@@ -111,16 +111,7 @@ C:\Users\klu\Desktop\Projects\FGP.Server\bin\Debug\net10.0\Microsoft.EntityFrame
 C:\Users\klu\Desktop\Projects\FGP.Server\bin\Debug\net10.0\Microsoft.EntityFrameworkCore.Design.dll
 C:\Users\klu\Desktop\Projects\FGP.Server\bin\Debug\net10.0\Microsoft.EntityFrameworkCore.Relational.dll
 C:\Users\klu\Desktop\Projects\FGP.Server\bin\Debug\net10.0\Microsoft.EntityFrameworkCore.Sqlite.dll
-C:\Users\klu\Desktop\Projects\FGP.Server\bin\Debug\net10.0\Microsoft.Extensions.Caching.Abstractions.dll
-C:\Users\klu\Desktop\Projects\FGP.Server\bin\Debug\net10.0\Microsoft.Extensions.Caching.Memory.dll
-C:\Users\klu\Desktop\Projects\FGP.Server\bin\Debug\net10.0\Microsoft.Extensions.Configuration.Abstractions.dll
-C:\Users\klu\Desktop\Projects\FGP.Server\bin\Debug\net10.0\Microsoft.Extensions.DependencyInjection.dll
-C:\Users\klu\Desktop\Projects\FGP.Server\bin\Debug\net10.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
 C:\Users\klu\Desktop\Projects\FGP.Server\bin\Debug\net10.0\Microsoft.Extensions.DependencyModel.dll
-C:\Users\klu\Desktop\Projects\FGP.Server\bin\Debug\net10.0\Microsoft.Extensions.Logging.dll
-C:\Users\klu\Desktop\Projects\FGP.Server\bin\Debug\net10.0\Microsoft.Extensions.Logging.Abstractions.dll
-C:\Users\klu\Desktop\Projects\FGP.Server\bin\Debug\net10.0\Microsoft.Extensions.Options.dll
-C:\Users\klu\Desktop\Projects\FGP.Server\bin\Debug\net10.0\Microsoft.Extensions.Primitives.dll
 C:\Users\klu\Desktop\Projects\FGP.Server\bin\Debug\net10.0\Microsoft.NET.StringTools.dll
 C:\Users\klu\Desktop\Projects\FGP.Server\bin\Debug\net10.0\Mono.TextTemplating.dll
 C:\Users\klu\Desktop\Projects\FGP.Server\bin\Debug\net10.0\Newtonsoft.Json.dll
