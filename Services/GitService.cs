@@ -4,10 +4,8 @@ namespace FGP.Server;
 
 public class GitService
 {
-    // !!! UPDATE THIS PATH !!!
-    // It must point to the folder containing 'my-test-project'
-    // Example: @"C:\Users\John\Desktop\Projects\my-git-server\";
-    private readonly string _repoBasePath = @"C:\Users\klu\Desktop\Projects"; 
+
+    private readonly string _repoBasePath = @"C:\Users\klu\Desktop\Projects\FGP"; 
 
     public List<string> GetBranches(string repoName)
     {

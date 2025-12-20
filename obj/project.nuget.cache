@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "j6YH0y9DOns=",
+  "dgSpecHash": "cr0ffjWODaE=",
   "success": true,
-  "projectFilePath": "C:\\Users\\klu\\Desktop\\Projects\\FGP.Server\\FGP.Server.csproj",
+  "projectFilePath": "C:\\Users\\klu\\Desktop\\Projects\\FGP\\FGP.Server\\FGP.Server.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\klu\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\klu\\.nuget\\packages\\libgit2sharp\\0.31.0\\libgit2sharp.0.31.0.nupkg.sha512",

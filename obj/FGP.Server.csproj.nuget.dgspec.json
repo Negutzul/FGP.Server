@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\klu\\Desktop\\Projects\\FGP.Server\\FGP.Server.csproj": {}
+    "C:\\Users\\klu\\Desktop\\Projects\\FGP\\FGP.Server\\FGP.Server.csproj": {}
   },
   "projects": {
-    "C:\\Users\\klu\\Desktop\\Projects\\FGP.Server\\FGP.Server.csproj": {
+    "C:\\Users\\klu\\Desktop\\Projects\\FGP\\FGP.Server\\FGP.Server.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\klu\\Desktop\\Projects\\FGP.Server\\FGP.Server.csproj",
+        "projectUniqueName": "C:\\Users\\klu\\Desktop\\Projects\\FGP\\FGP.Server\\FGP.Server.csproj",
         "projectName": "FGP.Server",
-        "projectPath": "C:\\Users\\klu\\Desktop\\Projects\\FGP.Server\\FGP.Server.csproj",
+        "projectPath": "C:\\Users\\klu\\Desktop\\Projects\\FGP\\FGP.Server\\FGP.Server.csproj",
         "packagesPath": "C:\\Users\\klu\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\klu\\Desktop\\Projects\\FGP.Server\\obj\\",
+        "outputPath": "C:\\Users\\klu\\Desktop\\Projects\\FGP\\FGP.Server\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\klu\\AppData\\Roaming\\NuGet\\NuGet.Config"
