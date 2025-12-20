@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FGP.Server")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cbb1aaef3453b057170ca1132825631354e7d6ac")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+dd2c9bce9f22662c0fc94b5a387a6dbdfd7e3aa7")]
 [assembly: System.Reflection.AssemblyProductAttribute("FGP.Server")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FGP.Server")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

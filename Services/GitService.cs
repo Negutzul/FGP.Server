@@ -1,4 +1,5 @@
-using LibGit2Sharp; 
+using LibGit2Sharp;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FGP.Server; 
 
@@ -9,43 +10,36 @@ public class GitService
 
     public List<string> GetBranches(string repoName)
     {
-        // Combine the library path with the book name
         string repoPath = Path.Combine(_repoBasePath, repoName);
         
-        // Safety check: Does the book exist?
         if (!Directory.Exists(repoPath)) 
         {
             throw new Exception($"Repository not found at: {repoPath}");
         }
 
-        // Open the book and read the Table of Contents (Branches)
         using (var repo = new Repository(repoPath))
         {
             return repo.Branches
-                .Where(b => !b.IsRemote)      // Only look at local chapters
-                .Select(b => b.FriendlyName)  // Write down their names
+                .Where(b => !b.IsRemote)  
+                .Select(b => b.FriendlyName)
                 .ToList();
         }
     }
 
-    // Add this inside the GitService class
-    public List<SimpleCommit> GetCommitsForBranch(string repoName, string branchName)
+    public List<SimpleCommit> GetCommitsForBranch(string repoName, string branchName, int page = 1, int pageSize = 10)
     {
         string repoPath = Path.Combine(_repoBasePath, repoName);
-
         using (var repo = new Repository(repoPath))
         {
-            // 1. Find the specific branch (e.g., "main")
             var branch = repo.Branches[branchName];
-            
             if (branch == null)
             {
                 throw new Exception($"Branch '{branchName}' not found.");
             }
 
-            // 2. Read the commits from that branch
-            // We convert the complex Git commit into our "SimpleCommit"
             return branch.Commits
+                .Skip((page - 1) * pageSize) // Skip the previous pages
+                .Take(pageSize)              // Take only the chunk we need
                 .Select(c => new SimpleCommit(
                     c.Sha,
                     c.MessageShort,
@@ -61,24 +55,19 @@ public class GitService
         string repoPath = Path.Combine(_repoBasePath, repoName);
         using (var repo = new Repository(repoPath))
         {
-            // 1. Find the commit
+            
             var commit = repo.Lookup<Commit>(commitSha);
             if (commit == null) throw new Exception("Commit not found");
 
-            // 2. Find the parent (The "Old" version)
-            // If there is no parent (first commit), we compare against "Nothing" (null)
             var parentCommit = commit.Parents.FirstOrDefault();
             var parentTree = parentCommit?.Tree; 
 
-            // 3. Calculate the Diff
-            // We compare the Parent's Tree vs the Current Commit's Tree
             var patch = repo.Diff.Compare<Patch>(parentTree, commit.Tree);
 
-            // 4. Convert to our simple list
             return patch.Select(change => new FileDiff(
                 change.Path,
                 change.Status.ToString(),
-                change.Patch // This string contains the actual "+ code / - code"
+                change.Patch 
             )).ToList();
         }
     }

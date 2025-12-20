@@ -30,11 +30,11 @@ public class ReposController : ControllerBase
     }
 
     [HttpGet("{repoName}/branches/{branchName}/commits")]
-    public IActionResult GetCommits(string repoName, string branchName)
+    public IActionResult GetCommits(string repoName, string branchName, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
         try
         {
-            var commits = _gitService.GetCommitsForBranch(repoName, branchName);
+            var commits = _gitService.GetCommitsForBranch(repoName, branchName, page, pageSize);
             return Ok(commits);
         }
         catch (Exception ex)
@@ -62,10 +62,8 @@ public class ReposController : ControllerBase
     {
         try
         {
-            // Decodes the file content
             var content = _gitService.GetFileContent(repoName, branchName, path);
             
-            // Returns a simple JSON object with the content
             return Ok(new { Content = content });
         }
         catch (FileNotFoundException ex)
