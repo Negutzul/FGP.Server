@@ -75,4 +75,18 @@ public class ReposController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+    
+    [HttpGet] // GET /api/repos
+    public IActionResult GetAllRepos()
+    {
+        try
+        {
+            var repos = _gitService.GetRepositories();
+            return Ok(repos);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
 }

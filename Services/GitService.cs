@@ -100,6 +100,17 @@ public class GitService
             return blob.GetContentText();
         }
     }
+    public List<string> GetRepositories()
+    {
+        var directories = Directory.GetDirectories(_repoBasePath);
+
+        var gitRepos = directories
+            .Where(dir => Directory.Exists(Path.Combine(dir, ".git")))
+            .Select(dir => Path.GetFileName(dir))
+            .ToList();
+
+        return gitRepos;
+    }
 }
 
 public record SimpleCommit(
