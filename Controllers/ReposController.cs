@@ -76,7 +76,7 @@ public class ReposController : ControllerBase
         }
     }
     
-    [HttpGet] // GET /api/repos
+    [HttpGet]
     public IActionResult GetAllRepos()
     {
         try
