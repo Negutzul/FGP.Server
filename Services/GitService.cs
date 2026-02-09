@@ -111,6 +111,43 @@ public class GitService
 
         return gitRepos;
     }
+
+    public MergeResult MergeBranches(string repoName, string sourceBranch, string targetBranch)
+    {
+        string repoPath = Path.Combine(_repoBasePath, repoName);
+        
+        using (var repo = new Repository(repoPath))
+        {
+            // 1. Get the branches
+            var source = repo.Branches[sourceBranch];
+            var target = repo.Branches[targetBranch];
+
+            if (source == null || target == null) 
+                throw new Exception("One of the branches does not exist.");
+
+            // 2. We need a "Signature" (Who is merging this?)
+            var merger = new Signature("FGP Server", "server@fgp.com", DateTime.Now);
+
+            // 3. Checkout the target branch (e.g., 'main') so we can merge INTO it
+            Commands.Checkout(repo, target);
+
+            // 4. Perform the Merge
+            var result = repo.Merge(source, merger, new MergeOptions 
+            { 
+                FastForwardStrategy = FastForwardStrategy.Default 
+            });
+
+            // 5. Check if it worked
+            if (result.Status == MergeStatus.Conflicts)
+            {
+                // If conflict, abort (reset) to keep things clean for now
+                repo.Reset(ResetMode.Hard); 
+                throw new Exception("Merge conflict detected! Automated merge failed.");
+            }
+
+            return result; // Success
+        }
+    }
 }
 
 public record SimpleCommit(

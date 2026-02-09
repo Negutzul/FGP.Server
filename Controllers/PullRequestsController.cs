@@ -41,6 +41,32 @@ public class PullRequestsController : ControllerBase
         return Ok(newPr);
     }
 
+    [HttpPost("{id}/merge")]
+    public IActionResult MergePr(int id)
+    {
+        // 1. Find the PR in the Database
+        var pr = _db.PullRequests.Find(id);
+        if (pr == null) return NotFound("PR not found");
+
+        if (!pr.IsOpen) return BadRequest("This PR is already closed/merged.");
+
+        try 
+        {
+            // 2. Perform the actual Git Merge
+            _gitService.MergeBranches(pr.RepoName, pr.SourceBranch, pr.TargetBranch);
+
+            // 3. Update the Database Status
+            pr.IsOpen = false;
+            _db.SaveChanges();
+
+            return Ok(new { Message = "Merged successfully!", PrId = id });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Merge Failed: {ex.Message}");
+        }
+    }
+
     // GET: api/PullRequests
     [HttpGet]
     public IActionResult GetAllPrs()
