@@ -9,11 +9,13 @@ namespace FGP.Server.Controllers;
 public class PullRequestsController : ControllerBase
 {
     private readonly AppDbContext _db;
+    private readonly GitService _gitService;
 
-    // Inject the Database Manager
-    public PullRequestsController(AppDbContext db)
+    // Inject the Database Manager and Git Service
+    public PullRequestsController(AppDbContext db, GitService gitService)
     {
         _db = db;
+        _gitService = gitService;
     }
 
     // POST: api/PullRequests
