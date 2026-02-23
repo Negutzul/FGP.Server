@@ -89,4 +89,26 @@ public class ReposController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+
+    // POST: api/repos/{repoName}/upload
+    // Accepts a Git bundle file and applies it to the repo
+    [HttpPost("{repoName}/upload")]
+    [DisableRequestSizeLimit]
+    [RequestFormLimits(MultipartBodyLengthLimit = long.MaxValue)]
+    public async Task<IActionResult> UploadBundle(string repoName, IFormFile bundle)
+    {
+        if (bundle == null || bundle.Length == 0)
+            return BadRequest("No bundle file provided.");
+
+        try
+        {
+            using var stream = bundle.OpenReadStream();
+            await _gitService.ReceiveBundleAsync(repoName, stream);
+            return Ok(new { Message = $"Bundle applied to '{repoName}' successfully." });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Upload failed: {ex.Message}");
+        }
+    }
 }

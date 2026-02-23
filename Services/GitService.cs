@@ -148,6 +148,50 @@ public class GitService
             return result; // Success
         }
     }
+
+    public async Task ReceiveBundleAsync(string repoName, Stream bundleStream)
+    {
+        string repoPath = Path.Combine(_repoBasePath, repoName);
+
+        if (!Directory.Exists(repoPath))
+            throw new Exception($"Repository not found: {repoPath}");
+
+        // 1. Save the uploaded bundle to a temp file
+        string tempBundle = Path.Combine(Path.GetTempPath(), $"fgp-{Guid.NewGuid()}.bundle");
+
+        try
+        {
+            using (var fs = File.Create(tempBundle))
+                await bundleStream.CopyToAsync(fs);
+
+            // 2. Run: git bundle unbundle <tempfile>
+            //    This applies all the commits/branches from the bundle into the repo
+            var psi = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = "git",
+                Arguments = $"bundle unbundle \"{tempBundle}\"",
+                WorkingDirectory = repoPath,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            using var process = System.Diagnostics.Process.Start(psi)!;
+            string stderr = await process.StandardError.ReadToEndAsync();
+            await process.WaitForExitAsync();
+
+            // 3. Non-zero exit code means something went wrong
+            if (process.ExitCode != 0)
+                throw new Exception($"git bundle unbundle failed: {stderr}");
+        }
+        finally
+        {
+            // 4. Always clean up the temp file
+            if (File.Exists(tempBundle))
+                File.Delete(tempBundle);
+        }
+    }
 }
 
 public record SimpleCommit(
