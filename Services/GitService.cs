@@ -192,6 +192,40 @@ public class GitService
                 File.Delete(tempBundle);
         }
     }
+
+    // Creates a bundle file for a branch and returns its temp path.
+    // Caller is responsible for deleting the file after streaming it.
+    public async Task<string> CreateBundleAsync(string repoName, string branchName)
+    {
+        string repoPath = Path.Combine(_repoBasePath, repoName);
+
+        if (!Directory.Exists(repoPath))
+            throw new Exception($"Repository not found: {repoPath}");
+
+        string tempBundle = Path.Combine(Path.GetTempPath(), $"fgp-{Guid.NewGuid()}.bundle");
+
+        var psi = new System.Diagnostics.ProcessStartInfo
+        {
+            FileName = "git",
+            Arguments = $"bundle create \"{tempBundle}\" {branchName}",
+            WorkingDirectory = repoPath,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+
+        using var process = System.Diagnostics.Process.Start(psi)!;
+        string stderr = await process.StandardError.ReadToEndAsync();
+        await process.WaitForExitAsync();
+
+        if (process.ExitCode != 0)
+        {
+            if (File.Exists(tempBundle)) File.Delete(tempBundle);
+            throw new Exception($"git bundle create failed: {stderr}");
+        }
+
+        return tempBundle;
+    }
 }
 
 public record SimpleCommit(

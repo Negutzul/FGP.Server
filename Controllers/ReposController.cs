@@ -111,4 +111,31 @@ public class ReposController : ControllerBase
             return BadRequest($"Upload failed: {ex.Message}");
         }
     }
+
+    // GET: api/repos/{repoName}/download?branch=main
+    // Streams a Git bundle of the requested branch back to the caller
+    [HttpGet("{repoName}/download")]
+    public async Task<IActionResult> DownloadBundle(string repoName, [FromQuery] string branch = "main")
+    {
+        string? tempBundle = null;
+        try
+        {
+            tempBundle = await _gitService.CreateBundleAsync(repoName, branch);
+
+            // Read into memory so we can delete the temp file before returning
+            byte[] bundleBytes = await System.IO.File.ReadAllBytesAsync(tempBundle);
+
+            string fileName = $"{repoName}-{branch}.bundle";
+            return File(bundleBytes, "application/octet-stream", fileName);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Download failed: {ex.Message}");
+        }
+        finally
+        {
+            if (tempBundle != null && System.IO.File.Exists(tempBundle))
+                System.IO.File.Delete(tempBundle);
+        }
+    }
 }
