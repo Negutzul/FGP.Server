@@ -112,6 +112,44 @@ public class GitService
         return gitRepos;
     }
 
+    public string CreateRepository(string repoName)
+    {
+        string repoPath = Path.Combine(_repoBasePath, repoName);
+
+        if (Directory.Exists(repoPath))
+            throw new Exception($"Repository '{repoName}' already exists.");
+
+        Directory.CreateDirectory(repoPath);
+        Repository.Init(repoPath);
+
+        return repoPath;
+    }
+
+    public List<TreeEntry> GetFileTree(string repoName, string branchName, string folderPath = "")
+    {
+        string repoPath = Path.Combine(_repoBasePath, repoName);
+        using var repo = new Repository(repoPath);
+
+        var branch = repo.Branches[branchName]
+            ?? throw new Exception($"Branch '{branchName}' not found.");
+
+        // Start from the root tree of the tip commit
+        Tree tree = branch.Tip.Tree;
+
+        // Navigate into the sub-folder if one was provided
+        if (!string.IsNullOrWhiteSpace(folderPath))
+        {
+            var entry = branch.Tip[folderPath];
+            if (entry == null)
+                throw new Exception($"Path '{folderPath}' not found.");
+            if (entry.TargetType != TreeEntryTargetType.Tree)
+                throw new Exception($"Path '{folderPath}' is a file, not a directory.");
+            tree = (Tree)entry.Target;
+        }
+
+        return tree.ToList();
+    }
+
     public MergeResult MergeBranches(string repoName, string sourceBranch, string targetBranch)
     {
         string repoPath = Path.Combine(_repoBasePath, repoName);
@@ -240,3 +278,10 @@ public record FileDiff(
     string ChangeKind, 
     string Patch
 );
+
+// Input for POST /api/repos
+public record CreateRepoRequest(string RepoName);
+
+// Output for GET /api/repos/{name}/branches/{branch}/tree
+// Type is "Blob" (file) or "Tree" (folder)
+public record TreeEntryDto(string Name, string Path, string Type);

@@ -90,8 +90,39 @@ public class ReposController : ControllerBase
         }
     }
 
-    // POST: api/repos/{repoName}/upload
-    // Accepts a Git bundle file and applies it to the repo
+    [HttpPost]
+    public IActionResult CreateRepo([FromBody] CreateRepoRequest request)
+    {
+        try
+        {
+            _gitService.CreateRepository(request.RepoName);
+            return Ok(new { Message = $"Repository '{request.RepoName}' created successfully." });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpGet("{repoName}/branches/{branchName}/tree")]
+    public IActionResult GetFileTree(string repoName, string branchName, [FromQuery] string path = "")
+    {
+        try
+        {
+            var entries = _gitService.GetFileTree(repoName, branchName, path);
+            var result = entries.Select(e => new TreeEntryDto(
+                e.Name,
+                e.Path,
+                e.TargetType.ToString() // "Blob" = file, "Tree" = folder
+            ));
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return NotFound(ex.Message);
+        }
+    }
+
     [HttpPost("{repoName}/upload")]
     [DisableRequestSizeLimit]
     [RequestFormLimits(MultipartBodyLengthLimit = long.MaxValue)]
@@ -112,8 +143,6 @@ public class ReposController : ControllerBase
         }
     }
 
-    // GET: api/repos/{repoName}/download?branch=main
-    // Streams a Git bundle of the requested branch back to the caller
     [HttpGet("{repoName}/download")]
     public async Task<IActionResult> DownloadBundle(string repoName, [FromQuery] string branch = "main")
     {
