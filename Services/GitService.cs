@@ -125,6 +125,25 @@ public class GitService
         return repoPath;
     }
 
+    public void DeleteRepository(string repoName)
+    {
+        string repoPath = Path.Combine(_repoBasePath, repoName);
+
+        if (!Directory.Exists(repoPath))
+            throw new Exception($"Repository '{repoName}' not found.");
+
+        ForceDeleteDirectory(repoPath);
+    }
+
+    private static void ForceDeleteDirectory(string path)
+    {
+        foreach (var file in Directory.GetFiles(path, "*", SearchOption.AllDirectories))
+        {
+            File.SetAttributes(file, FileAttributes.Normal);
+        }
+        Directory.Delete(path, recursive: true);
+    }
+
     public List<TreeEntry> GetFileTree(string repoName, string branchName, string folderPath = "")
     {
         string repoPath = Path.Combine(_repoBasePath, repoName);
@@ -133,10 +152,8 @@ public class GitService
         var branch = repo.Branches[branchName]
             ?? throw new Exception($"Branch '{branchName}' not found.");
 
-        // Start from the root tree of the tip commit
         Tree tree = branch.Tip.Tree;
 
-        // Navigate into the sub-folder if one was provided
         if (!string.IsNullOrWhiteSpace(folderPath))
         {
             var entry = branch.Tip[folderPath];
@@ -194,7 +211,6 @@ public class GitService
         if (!Directory.Exists(repoPath))
             throw new Exception($"Repository not found: {repoPath}");
 
-        // 1. Save the uploaded bundle to a temp file
         string tempBundle = Path.Combine(Path.GetTempPath(), $"fgp-{Guid.NewGuid()}.bundle");
 
         try
@@ -202,8 +218,6 @@ public class GitService
             using (var fs = File.Create(tempBundle))
                 await bundleStream.CopyToAsync(fs);
 
-            // 2. Run: git bundle unbundle <tempfile>
-            //    This applies all the commits/branches from the bundle into the repo
             var psi = new System.Diagnostics.ProcessStartInfo
             {
                 FileName = "git",
@@ -219,20 +233,16 @@ public class GitService
             string stderr = await process.StandardError.ReadToEndAsync();
             await process.WaitForExitAsync();
 
-            // 3. Non-zero exit code means something went wrong
             if (process.ExitCode != 0)
                 throw new Exception($"git bundle unbundle failed: {stderr}");
         }
         finally
         {
-            // 4. Always clean up the temp file
             if (File.Exists(tempBundle))
                 File.Delete(tempBundle);
         }
     }
 
-    // Creates a bundle file for a branch and returns its temp path.
-    // Caller is responsible for deleting the file after streaming it.
     public async Task<string> CreateBundleAsync(string repoName, string branchName)
     {
         string repoPath = Path.Combine(_repoBasePath, repoName);
@@ -279,9 +289,5 @@ public record FileDiff(
     string Patch
 );
 
-// Input for POST /api/repos
 public record CreateRepoRequest(string RepoName);
-
-// Output for GET /api/repos/{name}/branches/{branch}/tree
-// Type is "Blob" (file) or "Tree" (folder)
 public record TreeEntryDto(string Name, string Path, string Type);

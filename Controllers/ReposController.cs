@@ -104,6 +104,20 @@ public class ReposController : ControllerBase
         }
     }
 
+    [HttpDelete("{repoName}")]
+    public IActionResult DeleteRepo(string repoName)
+    {
+        try
+        {
+            _gitService.DeleteRepository(repoName);
+            return Ok(new { Message = $"Repository '{repoName}' deleted successfully." });
+        }
+        catch (Exception ex)
+        {
+            return NotFound(ex.Message);
+        }
+    }
+
     [HttpGet("{repoName}/branches/{branchName}/tree")]
     public IActionResult GetFileTree(string repoName, string branchName, [FromQuery] string path = "")
     {
@@ -113,7 +127,7 @@ public class ReposController : ControllerBase
             var result = entries.Select(e => new TreeEntryDto(
                 e.Name,
                 e.Path,
-                e.TargetType.ToString() // "Blob" = file, "Tree" = folder
+                e.TargetType.ToString()
             ));
             return Ok(result);
         }
@@ -151,7 +165,6 @@ public class ReposController : ControllerBase
         {
             tempBundle = await _gitService.CreateBundleAsync(repoName, branch);
 
-            // Read into memory so we can delete the temp file before returning
             byte[] bundleBytes = await System.IO.File.ReadAllBytesAsync(tempBundle);
 
             string fileName = $"{repoName}-{branch}.bundle";
