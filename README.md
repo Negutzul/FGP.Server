@@ -34,7 +34,8 @@ FGP.Server/
 ├── Services/
 │   └── GitService.cs               # Core Git logic using LibGit2Sharp
 ├── Models/
-│   └── PullRequest.cs              # Database model for PRs
+│   ├── PullRequest.cs              # Database model for PRs
+│   └── PrComment.cs                # Database model for PR comments
 ├── Data/
 │   └── AppDbContext.cs             # Entity Framework database context
 ├── Program.cs                      # App startup and dependency injection
@@ -270,6 +271,42 @@ Merge a Pull Request. This performs an actual Git merge using LibGit2Sharp and m
 
 ---
 
+#### `POST /api/PullRequests/{id}/comments`
+Add a comment to a Pull Request.
+
+**Request Body:**
+```json
+{ "author": "klu", "body": "Looks good to me! Ship it." }
+```
+
+**Response:**
+```json
+{
+  "id": 1,
+  "pullRequestId": 3,
+  "author": "klu",
+  "body": "Looks good to me! Ship it.",
+  "createdAt": "2026-03-03T20:11:58Z"
+}
+```
+
+---
+
+#### `GET /api/PullRequests/{id}/comments`
+Get all comments on a Pull Request, sorted by date (oldest first).
+
+**Example:** `GET /api/PullRequests/3/comments`
+
+**Response:**
+```json
+[
+  { "id": 1, "pullRequestId": 3, "author": "klu", "body": "Looks good!", "createdAt": "..." },
+  { "id": 2, "pullRequestId": 3, "author": "dev2", "body": "Add tests first", "createdAt": "..." }
+]
+```
+
+---
+
 ### 4. Git Smart HTTP Protocol (`GitSmartHttpController.cs`)
 
 These endpoints implement the standard Git Smart HTTP protocol, allowing native `git clone` and `git push` commands to work against the FGP server.
@@ -336,6 +373,17 @@ PullRequest
 └── IsOpen          (bool, default: true)
 ```
 
+### `PrComment.cs` — The Comment Model
+
+```
+PrComment
+├── Id              (int, auto-generated)
+├── PullRequestId   (int, links to PullRequest)
+├── Author          (string)
+├── Body            (string)
+└── CreatedAt       (DateTime, UTC)
+```
+
 ### `AppDbContext.cs` — Entity Framework Context
 
 Manages the SQLite database (`app.db`) with tables for:
@@ -343,6 +391,7 @@ Manages the SQLite database (`app.db`) with tables for:
 - `Repositories`
 - `Branches` (with concurrency token on `HeadHash`)
 - `PullRequests`
+- `PrComments`
 
 ### `Program.cs` — Startup
 

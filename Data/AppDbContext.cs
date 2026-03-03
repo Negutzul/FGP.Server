@@ -11,6 +11,7 @@ public class AppDbContext : DbContext
         public DbSet<Repository> Repositories { get; set; }
         public DbSet<Branch> Branches { get; set; }
         public DbSet<PullRequest> PullRequests { get; set; }
+        public DbSet<PrComment> PrComments { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
