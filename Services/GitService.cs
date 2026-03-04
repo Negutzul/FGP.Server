@@ -167,6 +167,40 @@ public class GitService
         return tree.ToList();
     }
 
+    public BranchComparisonResult CompareBranches(string repoName, string sourceBranchName, string targetBranchName)
+    {
+        string repoPath = Path.Combine(_repoBasePath, repoName);
+        using var repo = new Repository(repoPath);
+
+        var source = repo.Branches[sourceBranchName]
+            ?? throw new Exception($"Branch '{sourceBranchName}' not found.");
+        var target = repo.Branches[targetBranchName]
+            ?? throw new Exception($"Branch '{targetBranchName}' not found.");
+
+        // Get the diff between the two branch tips
+        var patch = repo.Diff.Compare<Patch>(target.Tip.Tree, source.Tip.Tree);
+
+        var files = patch.Select(change => new FileDiff(
+            change.Path,
+            change.Status.ToString(),
+            change.Patch
+        )).ToList();
+
+        // Get commits in source that aren't in target
+        var filter = new CommitFilter
+        {
+            IncludeReachableFrom = source,
+            ExcludeReachableFrom = target,
+            SortBy = CommitSortStrategies.Topological
+        };
+
+        var commits = repo.Commits.QueryBy(filter)
+            .Select(c => new SimpleCommit(c.Sha, c.MessageShort, c.Author.Name, c.Author.When))
+            .ToList();
+
+        return new BranchComparisonResult(files, commits, files.Count, commits.Count);
+    }
+
     public MergeResult MergeBranches(string repoName, string sourceBranch, string targetBranch)
     {
         string repoPath = Path.Combine(_repoBasePath, repoName);
@@ -291,3 +325,4 @@ public record FileDiff(
 
 public record CreateRepoRequest(string RepoName);
 public record TreeEntryDto(string Name, string Path, string Type);
+public record BranchComparisonResult(List<FileDiff> Files, List<SimpleCommit> Commits, int FilesChanged, int CommitCount);

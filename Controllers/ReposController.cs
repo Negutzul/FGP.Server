@@ -90,6 +90,20 @@ public class ReposController : ControllerBase
         }
     }
 
+    [HttpGet("{repoName}/compare")]
+    public IActionResult CompareBranches(string repoName, [FromQuery] string source, [FromQuery] string target)
+    {
+        try
+        {
+            var result = _gitService.CompareBranches(repoName, source, target);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return NotFound(ex.Message);
+        }
+    }
+
     [HttpPost]
     public IActionResult CreateRepo([FromBody] CreateRepoRequest request)
     {
