@@ -11,7 +11,7 @@ public class PullRequestsController : ControllerBase
     private readonly AppDbContext _db;
     private readonly GitService _gitService;
 
-    // Inject the Database Manager and Git Service
+    // Inject the Database Manager
     public PullRequestsController(AppDbContext db, GitService gitService)
     {
         _db = db;
@@ -75,41 +75,5 @@ public class PullRequestsController : ControllerBase
     {
         // Return the whole list
         return Ok(_db.PullRequests.ToList());
-    }
-
-    // POST: api/PullRequests/{id}/comments
-    [HttpPost("{id}/comments")]
-    public IActionResult AddComment(int id, [FromBody] CreateCommentRequest request)
-    {
-        var pr = _db.PullRequests.Find(id);
-        if (pr == null) return NotFound("PR not found");
-
-        var comment = new PrComment
-        {
-            PullRequestId = id,
-            Author = request.Author,
-            Body = request.Body,
-            CreatedAt = DateTime.UtcNow
-        };
-
-        _db.PrComments.Add(comment);
-        _db.SaveChanges();
-
-        return Ok(comment);
-    }
-
-    // GET: api/PullRequests/{id}/comments
-    [HttpGet("{id}/comments")]
-    public IActionResult GetComments(int id)
-    {
-        var pr = _db.PullRequests.Find(id);
-        if (pr == null) return NotFound("PR not found");
-
-        var comments = _db.PrComments
-            .Where(c => c.PullRequestId == id)
-            .OrderBy(c => c.CreatedAt)
-            .ToList();
-
-        return Ok(comments);
     }
 }
