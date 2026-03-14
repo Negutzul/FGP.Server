@@ -13,7 +13,7 @@ public class GitSmartHttpController : ControllerBase
     public async Task GetInfoRefs(string repoName, [FromQuery] string service)
     {
         await RunGitHttpBackend(repoName, service);
-    }
+    } 
 
     [Route("api/repos/{repoName}.git/git-upload-pack")]
     [HttpPost]
