@@ -201,7 +201,7 @@ public class GitService
         return new BranchComparisonResult(files, commits, files.Count, commits.Count);
     }
 
-    public MergeResult MergeBranches(string repoName, string sourceBranch, string targetBranch)
+    public string MergeBranches(string repoName, string sourceBranch, string targetBranch)
     {
         string repoPath = Path.Combine(_repoBasePath, repoName);
         
@@ -211,30 +211,39 @@ public class GitService
             var source = repo.Branches[sourceBranch];
             var target = repo.Branches[targetBranch];
 
-            if (source == null || target == null) 
-                throw new Exception("One of the branches does not exist.");
+            if (source == null) 
+                throw new Exception($"Source branch '{sourceBranch}' does not exist.");
+            if (target == null) 
+                throw new Exception($"Target branch '{targetBranch}' does not exist.");
 
-            // 2. We need a "Signature" (Who is merging this?)
             var merger = new Signature("FGP Server", "server@fgp.com", DateTime.Now);
 
-            // 3. Checkout the target branch (e.g., 'main') so we can merge INTO it
+            // 2. Check if we can fast-forward
+            var mergeBase = repo.ObjectDatabase.FindMergeBase(target.Tip, source.Tip);
+
+            if (mergeBase != null && mergeBase.Sha == target.Tip.Sha)
+            {
+                // Fast-forward: target is an ancestor of source, just move the pointer
+                repo.Refs.UpdateTarget(repo.Refs[target.CanonicalName], source.Tip.Id);
+                return $"Fast-forward merge: {targetBranch} updated to {source.Tip.Sha.Substring(0, 7)}";
+            }
+
+            // 3. Non-fast-forward: create a merge commit
+            // Checkout the target branch first
             Commands.Checkout(repo, target);
 
-            // 4. Perform the Merge
             var result = repo.Merge(source, merger, new MergeOptions 
             { 
-                FastForwardStrategy = FastForwardStrategy.Default 
+                FastForwardStrategy = FastForwardStrategy.NoFastForward 
             });
 
-            // 5. Check if it worked
             if (result.Status == MergeStatus.Conflicts)
             {
-                // If conflict, abort (reset) to keep things clean for now
-                repo.Reset(ResetMode.Hard); 
+                repo.Reset(ResetMode.Hard);
                 throw new Exception("Merge conflict detected! Automated merge failed.");
             }
 
-            return result; // Success
+            return $"Merge commit created on {targetBranch}: {result.Commit?.Sha?.Substring(0, 7) ?? "unknown"}";
         }
     }
 

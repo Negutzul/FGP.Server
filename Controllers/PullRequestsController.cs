@@ -55,13 +55,13 @@ public class PullRequestsController : ControllerBase
         try 
         {
             // 2. Perform the actual Git Merge
-            _gitService.MergeBranches(pr.RepoName, pr.SourceBranch, pr.TargetBranch);
+            var message = _gitService.MergeBranches(pr.RepoName, pr.SourceBranch, pr.TargetBranch);
 
             // 3. Update the Database Status
             pr.IsOpen = false;
             _db.SaveChanges();
 
-            return Ok(new { Message = "Merged successfully!", PrId = id });
+            return Ok(new { Message = message, PrId = id });
         }
         catch (Exception ex)
         {
