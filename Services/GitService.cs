@@ -201,6 +201,37 @@ public class GitService
         return new BranchComparisonResult(files, commits, files.Count, commits.Count);
     }
 
+    public void CreateBranch(string repoName, string branchName, string sourceBranchName)
+    {
+        string repoPath = Path.Combine(_repoBasePath, repoName);
+        using var repo = new Repository(repoPath);
+
+        var source = repo.Branches[sourceBranchName]
+            ?? throw new Exception($"Source branch '{sourceBranchName}' not found.");
+
+        if (repo.Branches[branchName] != null)
+            throw new Exception($"Branch '{branchName}' already exists.");
+
+        repo.CreateBranch(branchName, source.Tip);
+    }
+
+    public void DeleteBranch(string repoName, string branchName)
+    {
+        string repoPath = Path.Combine(_repoBasePath, repoName);
+        using var repo = new Repository(repoPath);
+
+        if (branchName == "main" || branchName == "master")
+            throw new Exception($"Cannot delete the '{branchName}' branch.");
+
+        var branch = repo.Branches[branchName]
+            ?? throw new Exception($"Branch '{branchName}' not found.");
+
+        if (branch.IsCurrentRepositoryHead)
+            throw new Exception("Cannot delete the currently checked-out branch.");
+
+        repo.Branches.Remove(branch);
+    }
+
     public string MergeBranches(string repoName, string sourceBranch, string targetBranch)
     {
         string repoPath = Path.Combine(_repoBasePath, repoName);
@@ -333,5 +364,6 @@ public record FileDiff(
 );
 
 public record CreateRepoRequest(string RepoName);
+public record CreateBranchRequest(string BranchName, string SourceBranch);
 public record TreeEntryDto(string Name, string Path, string Type);
 public record BranchComparisonResult(List<FileDiff> Files, List<SimpleCommit> Commits, int FilesChanged, int CommitCount);

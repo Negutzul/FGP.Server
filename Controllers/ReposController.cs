@@ -29,6 +29,34 @@ public class ReposController : ControllerBase
         }
     }
 
+    [HttpPost("{repoName}/branches")]
+    public IActionResult CreateBranch(string repoName, [FromBody] CreateBranchRequest request)
+    {
+        try
+        {
+            _gitService.CreateBranch(repoName, request.BranchName, request.SourceBranch);
+            return Ok(new { Message = $"Branch '{request.BranchName}' created from '{request.SourceBranch}'." });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpDelete("{repoName}/branches/{branchName}")]
+    public IActionResult DeleteBranch(string repoName, string branchName)
+    {
+        try
+        {
+            _gitService.DeleteBranch(repoName, branchName);
+            return Ok(new { Message = $"Branch '{branchName}' deleted." });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
     [HttpGet("{repoName}/branches/{branchName}/commits")]
     public IActionResult GetCommits(string repoName, string branchName, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
