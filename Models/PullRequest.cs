@@ -14,6 +14,9 @@ public class PullRequest
     public required string TargetBranch { get; set; } // Where the code is going
     
     public required bool IsOpen { get; set; } = true; // Is it merged yet?
+
+    public string CreatedBy { get; set; } = "Anonymous";
+    public string? MergedBy { get; set; }
 }
 
 // The form users fill out to create a PR
@@ -22,5 +25,6 @@ public record CreatePrRequest(
     string Title,
     string Description,
     string SourceBranch,
-    string TargetBranch
+    string TargetBranch,
+    string CreatedBy
 );

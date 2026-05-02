@@ -232,7 +232,7 @@ public class GitService
         repo.Branches.Remove(branch);
     }
 
-    public string MergeBranches(string repoName, string sourceBranch, string targetBranch)
+    public string MergeBranches(string repoName, string sourceBranch, string targetBranch, string mergedBy = "FGP Server")
     {
         string repoPath = Path.Combine(_repoBasePath, repoName);
         
@@ -247,7 +247,7 @@ public class GitService
             if (target == null) 
                 throw new Exception($"Target branch '{targetBranch}' does not exist.");
 
-            var merger = new Signature("FGP Server", "server@fgp.com", DateTime.Now);
+            var merger = new Signature(mergedBy, $"{mergedBy.ToLower().Replace(" ", "")}@fgp.dev", DateTime.Now);
 
             // 2. Check if we can fast-forward
             var mergeBase = repo.ObjectDatabase.FindMergeBase(target.Tip, source.Tip);

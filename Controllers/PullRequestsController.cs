@@ -30,7 +30,8 @@ public class PullRequestsController : ControllerBase
             Description = request.Description,
             SourceBranch = request.SourceBranch,
             TargetBranch = request.TargetBranch,
-            IsOpen = true // Default to Open
+            IsOpen = true,
+            CreatedBy = request.CreatedBy ?? "Anonymous"
         };
 
         // 2. Add it to the "Spreadsheet" (in memory)
@@ -44,7 +45,7 @@ public class PullRequestsController : ControllerBase
     }
 
     [HttpPost("{id}/merge")]
-    public IActionResult MergePr(int id)
+    public IActionResult MergePr(int id, [FromBody] MergePrRequest? request)
     {
         // 1. Find the PR in the Database
         var pr = _db.PullRequests.Find(id);
@@ -52,13 +53,16 @@ public class PullRequestsController : ControllerBase
 
         if (!pr.IsOpen) return BadRequest("This PR is already closed/merged.");
 
+        var mergedBy = request?.MergedBy ?? "Anonymous";
+
         try 
         {
             // 2. Perform the actual Git Merge
-            var message = _gitService.MergeBranches(pr.RepoName, pr.SourceBranch, pr.TargetBranch);
+            var message = _gitService.MergeBranches(pr.RepoName, pr.SourceBranch, pr.TargetBranch, mergedBy);
 
             // 3. Update the Database Status
             pr.IsOpen = false;
+            pr.MergedBy = mergedBy;
             _db.SaveChanges();
 
             return Ok(new { Message = message, PrId = id });
@@ -113,3 +117,5 @@ public class PullRequestsController : ControllerBase
         return Ok(comments);
     }
 }
+
+public record MergePrRequest(string MergedBy);
